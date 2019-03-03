@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDom from "react-dom";
 import Plotly from "plotly.js";
 import createPlotlyComponent from "react-plotly.js/factory";
 const Plot = createPlotlyComponent(Plotly);
@@ -7,8 +8,8 @@ const x = [1, 2, 3, 4, 5];
 const y = [1, 6, 3, 6, 1];
 
 const plot1 = {
-  x: [1, 2, 3, 4, 5],
-  y: [1, 6, 3, 6, 1],
+  // x: [1, 2, 3, 4, 5],
+  // y: [1, 6, 3, 6, 1],
   mode: "markers+text",
   type: "scatter",
   name: "Team A",
@@ -66,70 +67,60 @@ export default class App extends React.Component {
       var cy = -(my * yx1) + yy1;
 
       // mousemove Hack
-      graphDiv.addEventListener("mousemove", function(evt) {
-        var xInDataCoord = mx * evt.x + cx;
-        var yInDataCoord = my * evt.y + cy;
+      // 座標デバッグ用
+      // graphDiv.addEventListener("mousemove", evt => {
+      //   var xInDataCoord = mx * evt.x + cx;
+      //   var yInDataCoord = my * evt.y + cy;
 
-        Plotly.relayout(
-          graphDiv,
-          "title",
-          ["x: " + xInDataCoord, "y : " + yInDataCoord].join("<br>")
-        );
-      });
+      //   Plotly.relayout(
+      //     graphDiv,
+      //     "title",
+      //     ["x: " + xInDataCoord, "y : " + yInDataCoord].join("<br>")
+      //   );
+      // });
 
       // click Hack
-      graphDiv.addEventListener("click", function(evt) {
+      graphDiv.addEventListener("click", evt => {
         var xInDataCoord = mx * evt.x + cx;
         var yInDataCoord = my * evt.y + cy;
 
-        // const { traceX, traceY } = this.state; // todo: stateアクセスだと動かない？？？
-        console.debug(`click x:${xInDataCoord} y:${yInDataCoord}`);
-        this.insertPlot(xInDataCoord, yInDataCoord);
-
-        // 既存のplotArrayデータにplotを追加する(≒array.push())
-        //
+        // 既存のplotArrayデータにplotを追加する
         Plotly.extendTraces(
           graphDiv,
           { x: [[xInDataCoord]], y: [[yInDataCoord]] },
-          [0]
+          [0] // 対象のtraceData index. 調整が必要になるかも
         );
+
+        this.insertPlot(xInDataCoord, yInDataCoord);
       });
     }
   };
 
-  onRelayout = e => {
-    // graph div data set
-    // console.debug("onRelayout ", e);
-    const traceX = e.traceData.x;
-    const traceY = e.traceData.y;
-    // stateアクセスだと動かないので今はsetするだけ
-    if (traceX && traceY) this.setState({ traceX, traceY });
-  };
-
   insertPlot = (x, y) => {
-    // todo: Listnerからcallされない
-    console.debug("call insert");
-    // todo: setStateでRelayoutする必要がある
-    // this.setState({
-    //   plot: {
-    //     x: this.state.x.push(x),
-    //     y: this.state.y.push(y)
-    //   }
-    // });
+    console.debug(`call insert x: ${x} y: ${y}`);
+    this.setState({
+      plot: {
+        x: this.state.plot.x.concat(x),
+        y: this.state.plot.y.concat(y)
+      }
+    });
   };
 
   render() {
-    // console.log("this.state", this.state);
+    console.log("this.state.plot", this.state.plot);
     const { x, y } = this.state.plot;
     const data = [{ ...plot1, x, y }];
 
     return (
       <Plot
+        ref={node => {
+          this.graphNode = node;
+        }}
         data={data}
         layout={layout}
         onInitialized={this.onInitialized}
         onClick={() => console.debug("onClick")}
-        onRelayout={this.onRelayout}
+        onTransitioning={e => console.debug("onRedraw", e)}
       />
     );
   }
