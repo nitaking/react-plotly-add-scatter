@@ -83,12 +83,15 @@ export default class App extends React.Component {
       var xInDataCoord = mx * evt.x + cx;
       var yInDataCoord = my * evt.y + cy;
 
-      // 既存のplotArrayデータにplotを追加する
+      // 既存のPlot.data[index]オブジェクトにplotを追加する
       Plotly.extendTraces(
         graphDiv,
         { x: [[xInDataCoord]], y: [[yInDataCoord]] },
         [0] // 対象のtraceData index. 調整が必要になるかも
       );
+
+      // Plot.dataオブジェクトにplotを新規追加する場合は↓
+      // Plotly.addTraces(graphDiv, { x: [xInDataCoord], y: [yInDataCoord] });
 
       this.insertPlot(xInDataCoord, yInDataCoord);
     });
