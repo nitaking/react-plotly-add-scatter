@@ -44,56 +44,54 @@ export default class App extends React.Component {
   onInitialListner = () => {
     const { graphDiv } = this.state;
 
-    if (graphDiv) {
-      var xaxis = graphDiv._fullLayout.xaxis;
-      var yaxis = graphDiv._fullLayout.yaxis;
-      var margin = graphDiv._fullLayout.margin;
-      var offsets = graphDiv.getBoundingClientRect();
+    var xaxis = graphDiv._fullLayout.xaxis;
+    var yaxis = graphDiv._fullLayout.yaxis;
+    var margin = graphDiv._fullLayout.margin;
+    var offsets = graphDiv.getBoundingClientRect();
 
-      //Calculate linear function to convert x coord
-      var xy1 = graphDiv.layout.xaxis.range[0];
-      var xy2 = graphDiv.layout.xaxis.range[1];
-      var xx1 = offsets.left + margin.l;
-      var xx2 = offsets.left + graphDiv.offsetWidth - margin.r;
-      var mx = (xy2 - xy1) / (xx2 - xx1);
-      var cx = -(mx * xx1) + xy1;
+    //Calculate linear function to convert x coord
+    var xy1 = graphDiv.layout.xaxis.range[0];
+    var xy2 = graphDiv.layout.xaxis.range[1];
+    var xx1 = offsets.left + margin.l;
+    var xx2 = offsets.left + graphDiv.offsetWidth - margin.r;
+    var mx = (xy2 - xy1) / (xx2 - xx1);
+    var cx = -(mx * xx1) + xy1;
 
-      //Calculate linear function to convert y coord
-      var yy1 = graphDiv.layout.yaxis.range[0];
-      var yy2 = graphDiv.layout.yaxis.range[1];
-      var yx1 = offsets.top + graphDiv.offsetHeight - margin.b;
-      var yx2 = offsets.top + margin.t;
-      var my = (yy2 - yy1) / (yx2 - yx1);
-      var cy = -(my * yx1) + yy1;
+    //Calculate linear function to convert y coord
+    var yy1 = graphDiv.layout.yaxis.range[0];
+    var yy2 = graphDiv.layout.yaxis.range[1];
+    var yx1 = offsets.top + graphDiv.offsetHeight - margin.b;
+    var yx2 = offsets.top + margin.t;
+    var my = (yy2 - yy1) / (yx2 - yx1);
+    var cy = -(my * yx1) + yy1;
 
-      // mousemove Hack
-      // 座標デバッグ用
-      // graphDiv.addEventListener("mousemove", evt => {
-      //   var xInDataCoord = mx * evt.x + cx;
-      //   var yInDataCoord = my * evt.y + cy;
+    // mousemove Hack
+    // 座標デバッグ用
+    // graphDiv.addEventListener("mousemove", evt => {
+    //   var xInDataCoord = mx * evt.x + cx;
+    //   var yInDataCoord = my * evt.y + cy;
 
-      //   Plotly.relayout(
-      //     graphDiv,
-      //     "title",
-      //     ["x: " + xInDataCoord, "y : " + yInDataCoord].join("<br>")
-      //   );
-      // });
+    //   Plotly.relayout(
+    //     graphDiv,
+    //     "title",
+    //     ["x: " + xInDataCoord, "y : " + yInDataCoord].join("<br>")
+    //   );
+    // });
 
-      // click Hack
-      graphDiv.addEventListener("click", evt => {
-        var xInDataCoord = mx * evt.x + cx;
-        var yInDataCoord = my * evt.y + cy;
+    // click Hack
+    graphDiv.addEventListener("click", evt => {
+      var xInDataCoord = mx * evt.x + cx;
+      var yInDataCoord = my * evt.y + cy;
 
-        // 既存のplotArrayデータにplotを追加する
-        Plotly.extendTraces(
-          graphDiv,
-          { x: [[xInDataCoord]], y: [[yInDataCoord]] },
-          [0] // 対象のtraceData index. 調整が必要になるかも
-        );
+      // 既存のplotArrayデータにplotを追加する
+      Plotly.extendTraces(
+        graphDiv,
+        { x: [[xInDataCoord]], y: [[yInDataCoord]] },
+        [0] // 対象のtraceData index. 調整が必要になるかも
+      );
 
-        this.insertPlot(xInDataCoord, yInDataCoord);
-      });
-    }
+      this.insertPlot(xInDataCoord, yInDataCoord);
+    });
   };
 
   insertPlot = (x, y) => {
