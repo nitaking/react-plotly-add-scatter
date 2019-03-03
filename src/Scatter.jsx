@@ -105,7 +105,7 @@ export default class App extends React.Component {
   };
 
   render() {
-    console.log("this.state.plot", this.state.plot);
+    // console.log("this.state.plot", this.state.plot);
     const { x, y } = this.state.plot;
     const data = [{ ...plot1, x, y }];
 
