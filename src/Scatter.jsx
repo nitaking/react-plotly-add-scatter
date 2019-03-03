@@ -118,7 +118,6 @@ export default class App extends React.Component {
         layout={layout}
         onInitialized={this.onInitialized}
         onClick={() => console.debug("onClick")}
-        onTransitioning={e => console.debug("onRedraw", e)}
       />
     );
   }
